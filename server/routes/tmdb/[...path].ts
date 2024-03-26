@@ -1,6 +1,5 @@
 import { hash } from 'ohash'
-
-const TMDB_API_URL = 'https://api.themoviedb.org/3'
+import { cachedTMDB } from '../../../utils/tmdb'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
@@ -15,19 +14,11 @@ export default defineEventHandler(async (event) => {
 
   const config = useRuntimeConfig()
   if (!config.tmdb.apiKey) throw new Error('TMDB API key is not set')
-  const hashKey = hash([url, params])
   try {
-    return $fetch(event.context.params!.path, {
-      baseURL: TMDB_API_URL,
-      params: {
-        api_key: config.tmdb.apiKey,
-        language: 'en-US',
-        ...query,
-      },
-      headers: {
-        Accept: 'application/json',
-      },
-    })
+    return cachedTMDB({
+      path: params.path,
+      query,
+    }).catch(() => 0)
   } catch (e) {
     const status = e?.response?.status || 500
     setResponseStatus(event, status)
