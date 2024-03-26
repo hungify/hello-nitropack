@@ -1,3 +1,8 @@
 export default eventHandler((event) => {
-  return "Start by editing <code>server/routes/index.ts</code>.";
-});
+  return {
+    status: 200,
+    body: {
+      message: 'Hello Nitro!, This is a TMDB API proxy.',
+    },
+  }
+})
